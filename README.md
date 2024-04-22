@@ -201,9 +201,9 @@ import io.orkes.conductor.sdk.examples.HelloWorld.workflow.WorkflowInput;
 
 public class Main {
 
-    private static final String ENV_ROOT_URI = "CONDUCTOR_SERVER_URL";
-    private static final String ENV_KEY_ID = "KEY";
-    private static final String ENV_SECRET = "SECRET";
+    private static final String basePath = "CONDUCTOR_SERVER_URL";
+    private static final String keyId = "KEY"; //Please avoid exposing your key and secret in code as much as possible 
+    private static final String keySecret = "SECRET";
 
     public static void main(String[] args) throws ExecutionException, InterruptedException, TimeoutException {
         //Initialise Conductor Client
@@ -218,9 +218,9 @@ public class Main {
 
         //Create the workflow with input
         GreetingsWorkflow workflowCreator = new GreetingsWorkflow(workflowExecutor);
-        ConductorWorkflow<WorkflowInput> simpleWorkflow = workflowCreator.createWorkflow();
+        ConductorWorkflow<WorkflowInput> greetingWorkflow = workflowCreator.createWorkflow();
         WorkflowInput input = new WorkflowInput("Orkes");
-        CompletableFuture<Workflow> workflowExecution = simpleWorkflow.executeDynamic(input);
+        CompletableFuture<Workflow> workflowExecution = greetingWorkflow.executeDynamic(input);
         Workflow workflowRun = workflowExecution.get(10, TimeUnit.SECONDS);
 
         //Shutdown workflowClient and taskrunner
@@ -237,12 +237,6 @@ public class Main {
     }
 
     public static OrkesClients getApiClientWithCredentials() {
-        String basePath = System.getenv(ENV_ROOT_URI);
-        Preconditions.checkNotNull(basePath, ENV_ROOT_URI + " env not set");
-        String keyId = System.getenv(ENV_KEY_ID);
-        Preconditions.checkNotNull(keyId, ENV_KEY_ID + " env not set");
-        String keySecret = System.getenv(ENV_SECRET);
-        Preconditions.checkNotNull(keyId, ENV_SECRET + " env not set");
         ApiClient apiClient = new ApiClient(basePath,keyId,keySecret);
         apiClient.setWriteTimeout(30_000);
         apiClient.setReadTimeout(30_000);
@@ -251,7 +245,7 @@ public class Main {
     }
 }
 ```
-Add the [ApiUtil.java](example/java/io/orkes/conductor/sdk/examples/ApiUtil.java) file to set the environment variables.
+
 ## Running Workflows on Conductor Standalone (Installed Locally)
 
 ### Conductor Server Settings
